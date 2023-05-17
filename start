@@ -1,0 +1,34 @@
+import matplotlib.pyplot as plt
+import requests
+import json
+from matplotlib.animation import FuncAnimation
+
+def get_stream_viewers(streamer):
+    headers = {
+        'Client-ID': 'client id' 
+    }
+    url = f'https://api.twitch.tv/helix/streams?user_login={streamer}'
+    response = requests.get(url, headers=headers)
+    data = json.loads(response.text)
+    viewers = 0
+    if 'data' in data:
+        stream_data = data['data'][0]
+        viewers = stream_data['viewer_count']
+    return viewers
+
+def update_graph(frame):
+    viewers = get_stream_viewers('channel name') 
+    x.append(frame)
+    y.append(viewers)
+    ax.clear()
+    ax.plot(x, y)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Viewers')
+    ax.set_title('Twitch Stream Viewers')
+
+fig, ax = plt.subplots()
+x = []
+y = []
+update_interval = 5000
+ani = FuncAnimation(fig, update_graph, interval=update_interval)
+plt.show()
